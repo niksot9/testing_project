@@ -47,7 +47,6 @@ class Test:
         '''Добавляем в json тест, присвоив ему следующий порядковый номер test_id'''
         try:
             if isinstance(self, Test):
-                write_json = {}
                 with open(FILE_NAME, 'r', encoding='utf-8') as f:
                     file_content = json.load(f)
                     set_key = file_content.keys()
