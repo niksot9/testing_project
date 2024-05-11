@@ -1,5 +1,3 @@
-from set_classes import FILE_NAME
-
 class TestCreator:
     def __init__(self):
         self.new_test = {}
@@ -35,10 +33,3 @@ class TestCreator:
             else:
                 self.new_test['correct'] = [new_correct]
         return self.new_test
-
-
-
-
-
-
-

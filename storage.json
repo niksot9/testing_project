@@ -1,9 +1,9 @@
 {
   "1": {
     "subject": "astronomy",
-    "questions_count": 10,
-    "timer": true,
-    "scoring_system": 1,
+    "questions_count": "10",
+    "timer": "True",
+    "scoring_system": "1",
     "level": "beginner",
     "questions": [
       "q_1",
@@ -45,144 +45,51 @@
       [
         "a",
         "b",
+        "b",
+        "a"
+      ],
+      [
         "c",
-        "d"
+        "b",
+        "c",
+        "a"
+      ],
+      [
+        "c",
+        "",
+        "a",
+        "b"
+      ],
+      [
+        "c",
+        "a",
+        "b",
+        "a"
+      ],
+      [
+        "b",
+        "c",
+        "c",
+        "c"
       ],
       [
         "a",
-        "b",
         "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
         "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
+        "a"
       ]
     ],
     "correct": [
+      "b",
+      "b",
       "a",
-      "b",
-      "a",
-      "b",
-      "b",
       "c",
-      "c",
-      "d",
-      "a",
-      "b"
-    ]
-  },
-  "2": {
-    "subject": "astronomy",
-    "questions_count": 10,
-    "timer": true,
-    "scoring_system": 1,
-    "level": "beginner",
-    "questions": [
-      "q_1",
-      "q_2",
-      "q_3",
-      "q_4",
-      "q_5",
-      "q_6",
-      "q_7",
-      "q_8",
-      "q_9",
-      "q_10"
-    ],
-    "answer": [
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      [
-        "a",
-        "b",
-        "c",
-        "d"
-      ]
-    ],
-    "correct": [
       "a",
       "b",
-      "a",
-      "b",
-      "b",
-      "c",
       "c",
       "d",
-      "a",
-      "b"
+      "d",
+      "c"
     ]
   }
 }

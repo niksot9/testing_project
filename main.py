@@ -1,6 +1,6 @@
 import json
 from set_classes import Test
-from test_creator import TestCreator
+from creator_test import TestCreator
 
 
 
@@ -22,13 +22,14 @@ test = {
 
 if __name__ == '__main__':
     t1_new = TestCreator()
-    t1_new.create_test()
 
-    test_1 = Test(t1_new)
+    test_1 = Test(t1_new.create_test())
     print(test_1.check_empty())
 
-    # test_id = '1'
-    # print(test_1.get_test(test_id))
-    # print(test_1.put_test())
+    test_id = '1'
+    print(test_1.get_test(test_id))
+
+    test_1.put_test()
+
     # test_2 = Test(t)
     # test_2.put_test()
