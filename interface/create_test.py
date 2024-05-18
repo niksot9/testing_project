@@ -1,9 +1,12 @@
+from repository import put_test
+from models import Test
+
 class TestCreator:
     def __init__(self):
         self.new_test = {}
 
-
-    def create_test(self):
+    def creator_test(self):
+        '''Интерфейс по созданию теста, после создаем объект Test и в него передаем dict тест'''
         new_subject = input('Введите название предмета: ')
         self.new_test['subject'] = new_subject
         new_questions_count = input('Введите колличество вопросов: ')
@@ -32,4 +35,7 @@ class TestCreator:
                 self.new_test['correct'].append(new_correct)
             else:
                 self.new_test['correct'] = [new_correct]
-        return self.new_test
+        put_test(self.new_test)
+
+
+# TODO: реализовать исключения при неправильном вводе данных теста

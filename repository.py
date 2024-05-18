@@ -1,32 +1,89 @@
+import json
+from models import Test
 
-# result = {
-#     'questions_count': 10,
-#     'timer': True,
-#     'scoring_system': 1,
-#     'level': 'beginner',
-#     'questions': ['q_1', 'q_2', 'q_3', 'q_4', 'q_5', 'q_6', 'q_7', 'q_8', 'q_9', 'q_10', ],
-#     'answer': ['d', 'a', 'b', 'c', 'b', 'c', 'a', 'c', 'd', 'd'],
-#     'correct': 2
-# }
-#
-# to_json = {'test_1': astronomy, 'test_1_result': result}
-#
-# with open('storage.json', 'w') as f:
-#     json.dump(to_json, f)
-#     f.write('\n')
-#
-#
-# with open('storage.json') as f:
-#     print(f.read())
+FILE_NAME = 'storage/storage.json'
+
+def get_test(key_dict):
+    '''Берем из json тест по test_id'''
+    try:
+        with open(FILE_NAME, 'r', encoding='utf-8') as f:
+            file_content = json.load(f)
+            try:
+                return file_content[key_dict]
+            except KeyError:
+                print('Такого теста нет')
+    except json.JSONDecodeError:
+        print('Некоректная запись в файле json')
 
 
+def put_test(test: dict):
+    '''Добавляем в json тест, присвоив ему следующий порядковый номер test_id'''
+    try:
+        with open(FILE_NAME, 'r', encoding='utf-8') as f:
+            file_content = json.load(f)
+            set_key = file_content.keys()
+        with open(FILE_NAME, 'w', encoding='utf-8') as f:
+            if not set_key:
+                file_content[1] = test
+                json.dump(file_content, f, indent=2)
+            else:
+                set_key = list(file_content.keys())
+                key_json = check_next_id(set_key)
+                file_content[str(key_json)] = test
+                json.dump(file_content, f, indent=2)
+    except json.JSONDecodeError:
+        print('Некоректная запись в файле json')
+
+
+def check_next_id(id_lst: list):
+    '''Проверяет ID и возвращает ближайший свободный по порядку'''
+    if not id_lst:
+        return 1
+    num_1 = 0
+    num_2 = 0
+    for i in id_lst:
+        num_1 = num_2
+        num_2 = int(i)
+        if num_2 - num_1 > 1:
+            return num_1 + 1
+    return int(id_lst[-1]) + 1
+
+
+def del_test(test: Test):
+    '''Берем из json тест и удаляем его'''
+    if isinstance(test, Test):
+        with open(FILE_NAME, 'r', encoding='utf-8') as f:
+            file_content = json.load(f)
+        with open(FILE_NAME, 'w', encoding='utf-8') as f:
+            for key, value in file_content.items():
+                if value == test:
+                    del file_content[key]
+                    json.dump(file_content, f, indent=2)
+
+
+def check_empty():
+    '''Проверяем не пустой ли json и если пустой, добовляем пустой dict'''
+    with open(FILE_NAME, 'r+', encoding='utf-8') as f:
+        file_content = f.read().strip()
+        if not file_content:
+            file_content = {}
+            json.dump(file_content, f)
+            print('Файл пустой')
+        else:
+            print('Файл не пустой')
+
+
+def clear_json():
+    '''Чистим json, оставляем пустой dict'''
+    with open(FILE_NAME, 'w', encoding='utf-8') as f:
+        file_content = {}
+        json.dump(file_content, f)
 
 
 
 
-# json storage
-# методы для получения теста
-# репозиторий получает данные, добавить методы на добавление нового теста)
-# (репозиторий отдает объекты теста и принимает объект теста а не сырые данные,
-# покрыть тестами (как оттестировать ф-ии получения и записи в storage не используя основной storage, копировать) сетап?
+
+# TODO: покрыть тестами (как оттестировать ф-ии получения и записи в storage не используя основной storage, копировать) сетап?
+
+
 
