@@ -1,3 +1,6 @@
+import json
+from repository import FILE_NAME
+
 def access_rights():
     'Проверяем право доступа админ/пользователь'
     pass
@@ -11,4 +14,10 @@ def admin_handler():
     pass
 
 def choice_test():
-    pass
+    '''Интерфейс выбора теста по ключевым полям'''
+    with open(FILE_NAME, 'r', encoding='utf-8') as f:
+        file_content = json.load(f)
+    for i, elem in enumerate(file_content):
+        print(i, elem)
+
+print(choice_test())
