@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT,
+    username VARCHAR(50) NOT NULL,
+    admin BIT NOT NULL,
+    password_hash VARCHAR(50) NOT NULL);
+
+
+CREATE TABLE IF NOT EXISTS results (
+    test_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    score INTEGER NOT NULL);
+
+
+CREATE TABLE IF NOT EXISTS tests (
+    id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT,
+    subject VARCHAR(50) NOT NULL,
+    scoring_system INTEGER NOT NULL DEFAULT 1,
+    complexity_level VARCHAR(50) NOT NULL);
+
+
+CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT,
+    question VARCHAR(50) NOT NULL,
+    correct_answer VARCHAR(50) NOT NULL,
+    tests_id INTEGER NOT NULL);
+
+
+CREATE TABLE answers (
+    id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT,
+    test_answers VARCHAR(50) NOT NULL,
+    question_id INTEGER NOT NULL);
+
+
+CREATE TABLE test_question (
+    test_id INTEGER NOT NULL,
+    question_id INTEGER NOT NULL,
+    answers_id INTEGER NOT NULL);

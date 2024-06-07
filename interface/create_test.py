@@ -13,9 +13,9 @@ class TestCreator:
         self.new_test['questions_count'] = new_questions_count
         new_timer = input('Таймер True/False: ')
         self.new_test['timer'] = new_timer
-        new_scoring_system = input('Введите систему подсчета очков 1/2/3: ')
+        new_scoring_system = input('Введите систему подсчета баллов: ')
         self.new_test['scoring_system'] = new_scoring_system
-        new_level = input('Введите уровень сложности beginner/medium/advanced: ')
+        new_level = input('Введите уровень сложности beginner/average/advanced: ')
         self.new_test['level'] = new_level
         for i in range(1, int(new_questions_count) + 1):
             new_questions = input(f'Введите вопрос {i}: ')

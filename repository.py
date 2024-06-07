@@ -1,3 +1,49 @@
+import sqlite3
+from models import Test
+
+class SqliteRepository:
+    connection = None
+
+    def __init__(self):
+        self.connection = sqlite3.connect('./storage/storage.db')
+
+    def get_test(self):
+        query = """
+        SELECT * from Tests;
+        """
+        cursor = self.connection.execute(query)
+        data = cursor.fetchall()
+        tests = []
+        for row in data:
+            tests.append(Test.from_array(row))
+        return tests
+
+    def put_test(self, test: Test):
+        try:
+            query = """
+                    INSERT INTO tests (id, subject, scoring_system, complexity_level) 
+                    VALUES (?, ?, ?, ?);
+                    """
+            cursor = self.connection.execute(query)
+            data_tuple = test
+            print(data_tuple)
+            cursor.execute(query, data_tuple)
+            self.connection.commit()
+        except sqlite3.Error as error:
+            print("Ошибка ввода данных", error)
+        finally:
+            self.connection.close()
+
+
+
+
+
+
+class BaseRepository:
+    pass
+
+
+"""
 import json
 from models import Test
 
@@ -79,9 +125,7 @@ def clear_json():
         file_content = {}
         json.dump(file_content, f)
 
-
-
-
+"""
 
 # TODO: покрыть тестами (как оттестировать ф-ии получения и записи в storage не используя основной storage, копировать) сетап?
 
