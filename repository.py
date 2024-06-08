@@ -1,11 +1,13 @@
 import sqlite3
 from models import Test
 
+FILE_NAME = 'storage/storage.json'
+
 class SqliteRepository:
     connection = None
 
     def __init__(self):
-        self.connection = sqlite3.connect('./storage/storage.db')
+        self.connection = sqlite3.connect(FILE_NAME)
 
     def get_test(self):
         query = """
