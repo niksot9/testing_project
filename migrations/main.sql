@@ -25,13 +25,13 @@ CREATE TABLE IF NOT EXISTS questions (
     tests_id INTEGER NOT NULL);
 
 
-CREATE TABLE answers (
+CREATE TABLE IF NOT EXISTS answers (
     id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT,
     test_answers VARCHAR(50) NOT NULL,
     question_id INTEGER NOT NULL);
 
 
-CREATE TABLE test_question (
+CREATE TABLE IF NOT EXISTS test_question (
     test_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
     answers_id INTEGER NOT NULL);
