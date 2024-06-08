@@ -22,6 +22,11 @@ class Test:
         return self.subject
 
 
+    def test_output(self):
+        return (self.id, self.subject, self.scoring_system, self.complexity_level)
+
+
+
 class User:
     def __init__(self, id, is_admin):
         self.id = id

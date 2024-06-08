@@ -29,9 +29,8 @@ class SqliteRepository:
                     INSERT INTO tests (id, subject, scoring_system, complexity_level) 
                     VALUES (?, ?, ?, ?);
                     """
-            cursor = self.connection.execute(query)
             data_tuple = test
-            cursor.execute(query, data_tuple)
+            cursor = self.connection.execute(query, data_tuple)
             self.connection.commit()
         except sqlite3.Error as error:
             print("Ошибка ввода данных", error)
