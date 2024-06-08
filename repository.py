@@ -1,13 +1,15 @@
 import sqlite3
 from models import Test
 
-FILE_NAME = 'storage/storage.json'
+FILE_NAME = 'storage/storage.db'
 
 class SqliteRepository:
     connection = None
 
+
     def __init__(self):
         self.connection = sqlite3.connect(FILE_NAME)
+
 
     def get_test(self):
         query = """
@@ -20,6 +22,7 @@ class SqliteRepository:
             tests.append(Test.from_array(row))
         return tests
 
+
     def put_test(self, test: Test):
         try:
             query = """
@@ -28,7 +31,6 @@ class SqliteRepository:
                     """
             cursor = self.connection.execute(query)
             data_tuple = test
-            print(data_tuple)
             cursor.execute(query, data_tuple)
             self.connection.commit()
         except sqlite3.Error as error:
