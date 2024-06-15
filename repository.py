@@ -12,7 +12,7 @@ class SqliteRepository:
 
     def get_test_id(self, test_id: int):
         get_test_query = '''
-            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, q.correct_answer FROM tests t 
+            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, q.correct_answer_id FROM tests t 
             INNER JOIN test_question tq 
             ON t.id = tq.test_id 
             INNER JOIN questions q 
