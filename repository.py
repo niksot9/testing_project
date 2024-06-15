@@ -10,10 +10,46 @@ class SqliteRepository:
     def __init__(self):
         self.connection = sqlite3.connect(FILE_NAME)
 
+    def get_test_id(self, test_id: int):
+        get_test_query = '''
+            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, q.correct_answer FROM tests t 
+            INNER JOIN test_question tq 
+            ON t.id = tq.test_id 
+            INNER JOIN questions q 
+            ON q.id = tq.question_id
+            INNER JOIN answers a on a.question_id = q.id
+            WHERE t.id = ?;
+        '''
+        cursor = self.connection.execute(get_test_query, (test_id,))
+        data = cursor.fetchall()
+        parsed = {
+            'test_id': data[0][0],
+            'subject': data[0][1],
+            'scoring': data[0][2],
+            'complexity': data[0][3],
+            'questions': [],
+            'answers': [],
+            'correct': data[0][8]
+        }
+        for row in data:
+            question = {
+                'question_id': row[4],
+                'question': row[5]
+            }
+            if question not in parsed['questions']:
+                parsed['questions'].append(question)
+            answer = {
+                'question_id': row[6],
+                'answer': row[7]
+            }
+            if answer not in parsed['answers']:
+                parsed['answers'].append(answer)
+        print(parsed)
+        return data
 
     def get_test(self):
         query = """
-        SELECT * from Tests;
+        SELECT * FROM Tests;
         """
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
@@ -26,8 +62,9 @@ class SqliteRepository:
     def put_test(self, test: Test):
         try:
             query = """
-                    INSERT INTO tests (id, subject, scoring_system, complexity_level) 
-                    VALUES (?, ?, ?, ?);
+                    INSERT INTO tests (subject, scoring_system, complexity_level) 
+                    VALUES (?, ?, ?)
+                    RETURNING id;
                     """
             data_tuple = test
             cursor = self.connection.execute(query, data_tuple)
