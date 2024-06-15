@@ -12,7 +12,7 @@ class SqliteRepository:
 
     def get_test_id(self, test_id: int):
         get_test_query = '''
-            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, q.correct_answer_id FROM tests t 
+            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, a.id, q.correct_answer_id FROM tests t 
             INNER JOIN test_question tq 
             ON t.id = tq.test_id 
             INNER JOIN questions q 
@@ -29,7 +29,7 @@ class SqliteRepository:
             'complexity': data[0][3],
             'questions': [],
             'answers': [],
-            'correct': data[0][8]
+            'correct': ''
         }
         for row in data:
             question = {
@@ -44,6 +44,8 @@ class SqliteRepository:
             }
             if answer not in parsed['answers']:
                 parsed['answers'].append(answer)
+            if row[8] == data[0][9]:
+                parsed['correct'] = row[7]
         print(parsed)
         return data
 
