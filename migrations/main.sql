@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS tests (
 CREATE TABLE IF NOT EXISTS questions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     question VARCHAR(50) NOT NULL,
-    correct_answer VARCHAR(50) NOT NULL);
+    correct_answer_id INTEGER NOT NULL);
 
 
 CREATE TABLE IF NOT EXISTS answers (
