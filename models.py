@@ -1,8 +1,21 @@
+class AnswerVariant:
+    id: int
+    test_answer: str
+
+
+class Question:
+    id: int
+    question: str
+    correct_answer: int
+    answers_variants: list
+
+
 class Test:
     id: int
     subject: str
     scoring_system: int
     complexity_level: str
+    questions: list
 
     def __init__(self, id, subject, scoring_system, complexity_level):
         self.id = id
@@ -24,7 +37,6 @@ class Test:
 
     def test_output(self):
         return (self.id, self.subject, self.scoring_system, self.complexity_level)
-
 
 
 class User:
