@@ -26,8 +26,7 @@ CREATE TABLE IF NOT EXISTS answers (
 
 CREATE TABLE IF NOT EXISTS test_question (
     test_id INTEGER NOT NULL,
-    question_id INTEGER NOT NULL,
-    answers_id INTEGER NOT NULL);
+    question_id INTEGER NOT NULL;
 
 
 CREATE TABLE IF NOT EXISTS results (
