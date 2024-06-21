@@ -1,42 +1,52 @@
-class AnswerVariant:
-    id: int
+class Answer:
     test_answer: str
+
+    def __init__(self, test_answer):
+        self.test_answer = test_answer
+
+    def __repr__(self):
+        return self.test_answer
 
 
 class Question:
-    id: int
     question: str
+    answers: list
     correct_answer: int
-    answers_variants: list
 
+    def __init__(self, question, answers=[], correct_answer=None):
+        self.question = question
+        self.answers = answers
+        self.correct_answer = correct_answer
+
+    def __eq__(self, other):
+        return isinstance(other, Question) and self.question == other.question
+
+    def __repr__(self):
+        return (f'Question: {self.question}, Answers: {self.answers}, '
+                f'Correct: {self.correct_answer}')
 
 class Test:
-    id: int
     subject: str
     scoring_system: int
     complexity_level: str
     questions: list
 
-    def __init__(self, id, subject, scoring_system, complexity_level):
-        self.id = id
+    def __init__(self, subject, scoring_system, complexity_level, questions=None):
         self.subject = subject
         self.scoring_system = scoring_system
         self.complexity_level = complexity_level
+        self.questions = questions
 
     @classmethod
-    def from_array(cls, data: tuple or list):
-        id = data[0]
+    def from_array(cls, data: tuple or list, questions=None):
         subject = data[1]
         scoring_system = data[2]
         complexity_level = data[3]
-        return  cls(id, subject, scoring_system, complexity_level)
+        return cls(subject, scoring_system, complexity_level, questions)
 
     def __repr__(self):
-        return self.subject
-
-
-    def test_output(self):
-        return (self.id, self.subject, self.scoring_system, self.complexity_level)
+        return (f'Subject: {self.subject}, Scoring: {self.scoring_system}, '
+                f'Complexity: {self.complexity_level}, Questions: {self.questions}')
 
 
 class User:
