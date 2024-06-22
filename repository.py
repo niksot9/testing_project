@@ -1,55 +1,51 @@
+from pathlib import Path
 import sqlite3
-from models import Test
+from models import Test, Question, Answer
 
-FILE_NAME = 'storage/storage.db'
+FILE_NAME = Path('./storage/storage.db').resolve()
+
 
 class SqliteRepository:
     connection = None
-
 
     def __init__(self):
         self.connection = sqlite3.connect(FILE_NAME)
 
     def get_test_id(self, test_id: int):
-        get_test_query = '''
-            SELECT t.*, q.id, q.question, a.question_id, a.test_answer, a.id, q.correct_answer_id FROM tests t 
-            INNER JOIN test_question tq 
-            ON t.id = tq.test_id 
-            INNER JOIN questions q 
-            ON q.id = tq.question_id
-            INNER JOIN answers a on a.question_id = q.id
-            WHERE t.id = ?;
-        '''
-        cursor = self.connection.execute(get_test_query, (test_id,))
-        data = cursor.fetchall()
-        parsed = {
-            'test_id': data[0][0],
-            'subject': data[0][1],
-            'scoring': data[0][2],
-            'complexity': data[0][3],
-            'questions': [],
-            'answers': [],
-            'correct': ''
-        }
-        for row in data:
-            question = {
-                'question_id': row[4],
-                'question': row[5]
-            }
-            if question not in parsed['questions']:
-                parsed['questions'].append(question)
-            answer = {
-                'question_id': row[6],
-                'answer': row[7]
-            }
-            if answer not in parsed['answers']:
-                parsed['answers'].append(answer)
-            if row[8] == data[0][9]:
-                parsed['correct'] = row[7]
-        print(parsed)
-        return data
+        try:
+            get_test_query = '''
+                SELECT t.*, q.id, q.question, a.test_answer, a.id, q.correct_answer_id FROM tests t 
+                INNER JOIN test_question tq 
+                ON t.id = tq.test_id 
+                INNER JOIN questions q 
+                ON q.id = tq.question_id
+                INNER JOIN answers a on a.question_id = q.id
+                WHERE t.id = ?;
+            '''
+            cursor = self.connection.execute(get_test_query, (test_id,))
+            data = cursor.fetchall()
 
-    def get_test(self):
+            test = Test(
+                subject = data[0][1],
+                scoring_system = data[0][2],
+                complexity_level = data[0][3],
+                questions = [Question(data[0][5])]
+            )
+            for row in data:
+                new_question = Question(row[5])
+                new_answer = Answer(row[6])
+                if new_question not in test.questions:
+                    new_question.answers.append(new_answer)
+                    test.questions.append(new_question)
+                else:
+                    test.questions[-1].answers.append(new_answer)
+                if row[7] == row[8]:
+                    test.questions[-1].correct_answer = new_answer
+            return test
+        except IndexError:
+            return f'No tests on subject'
+
+    def get_all_subject(self):
         query = """
         SELECT * FROM Tests;
         """
@@ -57,11 +53,10 @@ class SqliteRepository:
         data = cursor.fetchall()
         tests = []
         for row in data:
-            tests.append(Test.from_array(row))
-        return tests
+            tests.append(Test.from_array(row).subject)
+        return f'Subjects: {tests}'
 
-
-    def put_test(self, test: Test):
+    def put_test(self, test: Test, question: Question, answer: Answer):
         try:
             query = """
                     INSERT INTO tests (subject, scoring_system, complexity_level) 
