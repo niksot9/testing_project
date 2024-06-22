@@ -11,7 +11,7 @@ class Answer:
 class Question:
     question: str
     answers: list
-    correct_answer: int
+    correct_answer: str
 
     def __init__(self, question, answers=[], correct_answer=None):
         self.question = question
