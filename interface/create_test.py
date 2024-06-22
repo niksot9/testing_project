@@ -1,41 +1,50 @@
-from repository import put_test
-from models import Test
+from repository import SqliteRepository
+from models import Test, Question, Answer
 
 class TestCreator:
     def __init__(self):
-        self.new_test = {}
+        self.test = Test()
+        self.question = Question()
+        self.answer = Answer()
+
 
     def creator_test(self):
-        '''Интерфейс по созданию теста, после создаем объект Test и в него передаем dict тест'''
-        new_subject = input('Введите название предмета: ')
-        self.new_test['subject'] = new_subject
-        new_questions_count = input('Введите колличество вопросов: ')
-        self.new_test['questions_count'] = new_questions_count
-        new_timer = input('Таймер True/False: ')
-        self.new_test['timer'] = new_timer
-        new_scoring_system = input('Введите систему подсчета баллов: ')
-        self.new_test['scoring_system'] = new_scoring_system
-        new_level = input('Введите уровень сложности beginner/average/advanced: ')
-        self.new_test['level'] = new_level
-        for i in range(1, int(new_questions_count) + 1):
-            new_questions = input(f'Введите вопрос {i}: ')
-            if 'questions' in self.new_test:
-                self.new_test['questions'].append(new_questions)
-            else:
-                self.new_test['questions'] = [new_questions]
-        for i in range(1, int(new_questions_count) + 1):
-            new_answers = [input(f'Введите ответ {j} на тест {i}: ') for j in range(1, 5)]
-            if 'answers' in self.new_test:
-                self.new_test['answers'].append(new_answers)
-            else:
-                self.new_test['answers'] = [new_answers]
-        for i in range(1, int(new_questions_count) + 1):
-            new_correct = input(f'Введите правильный ответ на вопрос {i}: ')
-            if 'correct' in self.new_test:
-                self.new_test['correct'].append(new_correct)
-            else:
-                self.new_test['correct'] = [new_correct]
-        put_test(self.new_test)
+        new_test = Test(
+            subject=input('Add subject: '),
+            scoring_system=input('Add scoring system: 1/2/3'),
+            complexity_level=input('Add complexity_level beginner/average/advanced: '),
+            questions=[Question(input('Add question 1: ')).question]
+        )
+        flag_questions = True
+        count_questions = 2
+        while flag_questions = True:
+            new_question = Question(
+                question=input(f'Add question {count_questions}: ')
+                answers=[Answer(input('Add answer 1: ')).test_answer]
+                flag_answers = True
+                count_answers = 1
+                while flag_answers = True:
+                    new_answer = Answer(
+                        answer=input(f'Add answers {count_answers}: '))
+                    count_answers += 1
+                    new_question.answers.append(new_answer)
+                    answer_continue = input('Сontinue adding answers? y/n: ')
+                    if answer_continue == 'y' or 'Y':
+                        flag_answers = False
+                correct_answer=input('Add correct answer: ')
+            )
+            count_questions += 1
+            new_test.questions.append(new_question.answers)
+            question_continue = input('Сontinue adding questions? y/n: ')
+            if question_continue == 'y' or 'Y':
+                flag_questions = False
+
+        # put_test(self.test, self.question, self.answer)
+
+
+
+test = TestCreator()
+test.creator_test()
 
 
 # TODO: реализовать исключения при неправильном вводе данных теста
