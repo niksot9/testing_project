@@ -1,8 +1,8 @@
 def creator_test():
     '''Интерфейс по созданию теста, заполняем 'сырыми' данными словарь, передаем в контроллер на проверку'''
     new_test = {'subject': input('Add subject: '),
-                'scoring_system': input('Add scoring system: 1/2/3 '),
-                'complexity_level': input('Add complexity_level beginner/average/advanced: '),
+                'scoring_system': input('Add scoring system (1 or 2): '),
+                'complexity_level': input('Add complexity_level (beginner or advanced): '),
                 'questions': [],
                 'answers': [],
                 'correct_answer': []
