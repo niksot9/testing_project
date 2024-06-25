@@ -1,12 +1,16 @@
+from checker import check_test
+
 def creator_test():
     '''Интерфейс по созданию теста, заполняем 'сырыми' данными словарь, передаем в контроллер на проверку'''
     new_test = {'subject': input('Add subject: '),
-                'scoring_system': input('Add scoring system (1 or 2): '),
+                'scoring_system': int(input('Add scoring system (1 or 2): ')),
                 'complexity_level': input('Add complexity_level (beginner or advanced): '),
                 'questions': [],
                 'answers': [],
                 'correct_answer': []
                 }
+    while check_test(new_test):
+        return creator_test()
 
     count_questions = 1
     while True:
