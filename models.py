@@ -4,6 +4,9 @@ class Answer:
     def __init__(self, test_answer):
         self.test_answer = test_answer
 
+    def __eq__(self, other):
+        return isinstance(other, Answer) and self.test_answer == other.test_answer
+
     def __repr__(self):
         return self.test_answer
 
@@ -19,7 +22,10 @@ class Question:
         self.correct_answer = correct_answer
 
     def __eq__(self, other):
-        return isinstance(other, Question) and self.question == other.question
+        return (isinstance(other, Question)
+                and self.question == other.question
+                and self.answers == other.answers
+                and self.correct_answer == other.correct_answer)
 
     def __repr__(self):
         return (f'Question: {self.question}, Answers: {self.answers}, '
@@ -50,8 +56,8 @@ class Test:
 
 
 class User:
-    def __init__(self, id, is_admin):
-        self.id = id
+    def __init__(self, name, is_admin):
+        self.name = name
         self.is_admin = is_admin
 
 
