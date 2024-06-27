@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 from models import Test, Question, Answer
 
-FILE_NAME = Path('./storage/storage.db').resolve()
+FILE_NAME = Path(__file__).parent / Path('./storage/storage.db')
 
 
 class SqliteRepository:
@@ -14,7 +14,7 @@ class SqliteRepository:
     def get_test_id(self, test_id: int):
         try:
             get_test_query = '''
-                SELECT t.*, q.id, q.question, a.test_answer, a.id, q.correct_answer_id FROM tests t 
+                SELECT t.*, q.id, q.question, a.test_answer, q.correct_answer FROM tests t 
                 INNER JOIN test_question tq 
                 ON t.id = tq.test_id 
                 INNER JOIN questions q 
@@ -38,17 +38,17 @@ class SqliteRepository:
                     new_question.answers.append(new_answer)
                     test.questions.append(new_question)
                 else:
-                    test.questions[-1].answers.append(new_answer)
-                if row[7] == row[8]:
-                    test.questions[-1].correct_answer = new_answer
+                    new_question.answers.append(new_answer)
+                    test.questions = [new_question if x == new_question else x for x in test.questions]
+                test.questions[-1].correct_answer = row[7]
             return test
         except IndexError:
             return f'No tests on subject'
 
     def get_all_subject(self):
-        query = """
+        query = '''
         SELECT * FROM Tests;
-        """
+        '''
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
         tests = []
@@ -56,115 +56,76 @@ class SqliteRepository:
             tests.append(Test.from_array(row).subject)
         return f'Subjects: {tests}'
 
-    def put_test(self, test: Test, question: Question, answer: Answer):
+
+    def add_new_answer(self, new_answers: dict, question_id: int):
         try:
-            query = """
-                    INSERT INTO tests (subject, scoring_system, complexity_level) 
+            query = '''
+                    INSERT INTO answers (test_answers, question_id)
+                    VALUES (?, ?);
+                    '''
+            cursor = self.connection.cursor()
+            cursor.execute('BEGIN')
+            for i in range(len(new_answers)):
+                cursor.execute(query, (new_answers[i], question_id))
+                cursor.execute('COMMIT')
+        except sqlite3.Error:
+            print('Transaction error')
+            cursor.execute('ROLLBACK')
+
+
+    def add_new_question(self, new_questions: list, new_answers: list, correct_answers: list, test_id: int):
+        try:
+            query = '''
+                    INSERT INTO questions (question, correct_answer_id)
+                    VALUES (?, ?)
+                    RETURNING id;
+                    '''
+            cursor = self.connection.cursor()
+            cursor.execute('BEGIN')
+            for i in range(len(new_questions)):
+                cursor.execute(query, (new_questions[i], correct_answers[i]))
+                question_id = cursor.fetchone()
+                cursor.execute('COMMIT')
+                self.add_new_answer(new_answers, question_id)
+        except sqlite3.Error:
+            print('Transaction error')
+            cursor.execute('ROLLBACK')
+
+
+    def add_new_test(self, new_test: dict):
+        try:
+            query = '''
+                    INSERT INTO tests (subject, scoring_system, complexity_level)
                     VALUES (?, ?, ?)
                     RETURNING id;
-                    """
-            data_tuple = test
-            cursor = self.connection.execute(query, data_tuple)
-            self.connection.commit()
-        except sqlite3.Error as error:
-            print("Ошибка ввода данных", error)
+                    '''
+            cursor = self.connection.cursor()
+            cursor.execute('BEGIN')
+            cursor.execute(query, (new_test['subject'], new_test['scoring_system'], new_test['complexity_level']))
+            test_id = cursor.fetchone()
+            cursor.execute('COMMIT')
+            self.add_new_question(new_test['questions'], new_test['answers'], new_test['correct_answers'], test_id[0])
+        except sqlite3.Error:
+            print('Transaction error')
+            cursor.execute('ROLLBACK')
         finally:
             self.connection.close()
 
 
+# t = SqliteRepository()
+# x = {'subject': 'Geo', 'scoring_system': 1, 'complexity_level': 'beg', 'questions': ['q1', 'q2'], 'answers': [['a1', 'a2', 'a3'], ['a1']], 'correct_answers': ['a2', 'a1']}
+# print(t.add_new_test(x))
+
+t = SqliteRepository()
+print(t.get_test_id(1))
+
+
+
+# class BaseRepository:
+#     pass
 
 
 
 
-class BaseRepository:
-    pass
 
-
-"""
-import json
-from models import Test
-
-FILE_NAME = 'storage/storage.json'
-
-def get_test(key_dict):
-    '''Берем из json тест по test_id'''
-    try:
-        with open(FILE_NAME, 'r', encoding='utf-8') as f:
-            file_content = json.load(f)
-            try:
-                return file_content[key_dict]
-            except KeyError:
-                print('Такого теста нет')
-    except json.JSONDecodeError:
-        print('Некоректная запись в файле json')
-
-
-def put_test(test: dict):
-    '''Добавляем в json тест, присвоив ему следующий порядковый номер test_id'''
-    try:
-        with open(FILE_NAME, 'r', encoding='utf-8') as f:
-            file_content = json.load(f)
-            set_key = file_content.keys()
-        with open(FILE_NAME, 'w', encoding='utf-8') as f:
-            if not set_key:
-                file_content[1] = test
-                json.dump(file_content, f, indent=2)
-            else:
-                set_key = list(file_content.keys())
-                key_json = check_next_id(set_key)
-                file_content[str(key_json)] = test
-                json.dump(file_content, f, indent=2)
-    except json.JSONDecodeError:
-        print('Некоректная запись в файле json')
-
-
-def check_next_id(id_lst: list):
-    '''Проверяет ID и возвращает ближайший свободный по порядку'''
-    if not id_lst:
-        return 1
-    num_1 = 0
-    num_2 = 0
-    for i in id_lst:
-        num_1 = num_2
-        num_2 = int(i)
-        if num_2 - num_1 > 1:
-            return num_1 + 1
-    return int(id_lst[-1]) + 1
-
-
-def del_test(test: Test):
-    '''Берем из json тест и удаляем его'''
-    if isinstance(test, Test):
-        with open(FILE_NAME, 'r', encoding='utf-8') as f:
-            file_content = json.load(f)
-        with open(FILE_NAME, 'w', encoding='utf-8') as f:
-            for key, value in file_content.items():
-                if value == test:
-                    del file_content[key]
-                    json.dump(file_content, f, indent=2)
-
-
-def check_empty():
-    '''Проверяем не пустой ли json и если пустой, добовляем пустой dict'''
-    with open(FILE_NAME, 'r+', encoding='utf-8') as f:
-        file_content = f.read().strip()
-        if not file_content:
-            file_content = {}
-            json.dump(file_content, f)
-            print('Файл пустой')
-        else:
-            print('Файл не пустой')
-
-
-def clear_json():
-    '''Чистим json, оставляем пустой dict'''
-    with open(FILE_NAME, 'w', encoding='utf-8') as f:
-        file_content = {}
-        json.dump(file_content, f)
-
-"""
-
-# TODO: покрыть тестами (как оттестировать ф-ии получения и записи в storage не используя основной storage, копировать) сетап?
-
-
-
+# TODO: покрыть тестами (как оттестировать ф-ии получения и записи в storage не используя основной storage, копировать) setup?
