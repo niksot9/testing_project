@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username VARCHAR(50) NOT NULL,
-    admin BIT NOT NULL,
-    password_hash VARCHAR(50) NOT NULL);
+    admin BIT NOT NULL;
 
 
 CREATE TABLE IF NOT EXISTS tests (
@@ -15,11 +14,10 @@ CREATE TABLE IF NOT EXISTS tests (
 CREATE TABLE IF NOT EXISTS questions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     question VARCHAR(50) NOT NULL,
-    correct_answer_id INTEGER NOT NULL);
+    correct_answer VARCHAR(50) NOT NULL);
 
 
 CREATE TABLE IF NOT EXISTS answers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
     test_answer VARCHAR(50) NOT NULL,
     question_id INTEGER NOT NULL);
 
