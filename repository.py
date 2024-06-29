@@ -8,8 +8,10 @@ FILE_NAME = Path(__file__).parent / Path('./storage/storage.db')
 class SqliteRepository:
     connection = None
 
+
     def __init__(self):
         self.connection = sqlite3.connect(FILE_NAME)
+
 
     def get_test_id(self, test_id: int):
         try:
@@ -45,9 +47,23 @@ class SqliteRepository:
         except IndexError:
             return f'No tests on subject'
 
+
+    def get_all_test_id_subject(self, subject: str):
+        query = '''
+            SELECT t.id FROM tests t
+            WHERE t.subject = ?;
+        '''
+        cursor = self.connection.execute(query, (subject,))
+        data = cursor.fetchall()
+        id_subject = []
+        for row in data:
+            id_subject.append(row)
+        return f'All id for {subject}: {id_subject}'
+
+
     def get_all_subject(self):
         query = '''
-        SELECT * FROM Tests;
+            SELECT * FROM tests;
         '''
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
@@ -60,9 +76,9 @@ class SqliteRepository:
     def add_new_answer(self, new_answers: dict, question_id: int):
         try:
             query = '''
-                    INSERT INTO answers (test_answers, question_id)
-                    VALUES (?, ?);
-                    '''
+                INSERT INTO answers (test_answers, question_id)
+                VALUES (?, ?);
+            '''
             cursor = self.connection.cursor()
             cursor.execute('BEGIN')
             for i in range(len(new_answers)):
@@ -76,10 +92,10 @@ class SqliteRepository:
     def add_new_question(self, new_questions: list, new_answers: list, correct_answers: list, test_id: int):
         try:
             query = '''
-                    INSERT INTO questions (question, correct_answer_id)
-                    VALUES (?, ?)
-                    RETURNING id;
-                    '''
+                INSERT INTO questions (question, correct_answer_id)
+                VALUES (?, ?)
+                RETURNING id;
+            '''
             cursor = self.connection.cursor()
             cursor.execute('BEGIN')
             for i in range(len(new_questions)):
@@ -95,10 +111,10 @@ class SqliteRepository:
     def add_new_test(self, new_test: dict):
         try:
             query = '''
-                    INSERT INTO tests (subject, scoring_system, complexity_level)
-                    VALUES (?, ?, ?)
-                    RETURNING id;
-                    '''
+                INSERT INTO tests (subject, scoring_system, complexity_level)
+                VALUES (?, ?, ?)
+                RETURNING id;
+            '''
             cursor = self.connection.cursor()
             cursor.execute('BEGIN')
             cursor.execute(query, (new_test['subject'], new_test['scoring_system'], new_test['complexity_level']))
@@ -111,18 +127,20 @@ class SqliteRepository:
         finally:
             self.connection.close()
 
+    def add_new_result(self, new_test: dict):
+        pass
+
+
+
 
 # t = SqliteRepository()
 # x = {'subject': 'Geo', 'scoring_system': 1, 'complexity_level': 'beg', 'questions': ['q1', 'q2'], 'answers': [['a1', 'a2', 'a3'], ['a1']], 'correct_answers': ['a2', 'a1']}
 # print(t.add_new_test(x))
 
-t = SqliteRepository()
-print(t.get_test_id(1))
+# t = SqliteRepository()
+# print(t.get_test_id(1))
 
 
-
-# class BaseRepository:
-#     pass
 
 
 
