@@ -2,15 +2,13 @@ from checker import check_test
 
 def creator_test():
     '''Интерфейс по созданию теста, заполняем 'сырыми' данными словарь, передаем в контроллер на проверку'''
-    new_test = {'subject': input('Add subject: '),
+    new_test = {'subject': input('Add subject: ').capitalize(),
                 'scoring_system': int(input('Add scoring system (1 or 2): ')),
-                'complexity_level': input('Add complexity_level (beginner or advanced): '),
+                'complexity_level': input('Add complexity_level (beginner or advanced): ').lower(),
                 'questions': [],
                 'answers': [],
-                'correct_answer': []
+                'correct_answers': []
                 }
-    while check_test(new_test):
-        return creator_test()
 
     count_questions = 1
     while True:
@@ -31,11 +29,14 @@ def creator_test():
             count_answers += 1
         new_test['answers'].append(new_answers)
 
-        new_test['correct_answer'].append(input(f'Add correct answer for question {count_questions}: '))
+        new_test['correct_answers'].append(input(f'Add correct answer for question {count_questions}: '))
         count_questions += 1
+
+    while check_test(new_test):
+        return creator_test()
 
     return new_test
 
 
 
-# TODO: реализовать исключения при неправильном вводе данных теста -> проверка в контроллере
+# TODO: реализовать исключения при неправильном вводе данных теста -> проверка в контроллере на сообветствие всех данных как
