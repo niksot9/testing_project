@@ -1,5 +1,5 @@
 from repository import FILE_NAME
-from models import Test, Question, Answer, User
+from models import Question, Answer, User
 import sqlite3
 
 CONNECTION_REPOSITORY = sqlite3.connect(FILE_NAME)
@@ -21,26 +21,28 @@ def check_test(new_test: dict):
     if data == []:
         return False
 
-    data_in_table = []
+
+    data_in_table = [Question(data[0][0], None, data[0][2])]
     for row in data:
-        question = Question(row[0])
-        answer = Answer(row[1])
-        if question not in data_in_table:
-            question.answers.append(answer)
-            data_in_table.append(question)
+        new_question = Question(row[0])
+        new_answer = Answer(row[1])
+        if new_question not in data_in_table:
+            new_question.correct_answer = row[2]
+            new_question.answers.append(new_answer)
+            data_in_table.append(new_question)
         else:
-            data_in_table['-1'].answers.append(answer)
-        data_in_table[-1].correct_answer = row[2]
+            data_in_table[-1].answers.append(new_answer)
+
 
     data_new = []
     for i in range(len(new_test['questions'])):
         new_question = Question(new_test['questions'][i], new_test['answers'][i], new_test['correct_answers'][i])
         data_new.append(new_question)
 
-    for elem in data_new:
-        pass
 
-    if data_in_table == data_new:
+    if len(data_in_table) != len(data_new):
+        return False
+    if [elem.answers and elem.correct_answer and elem.question for elem in data_in_table] == [elem.answers and elem.correct_answer and elem.question for elem in data_new]:
         print(f'Test exists, please re-enter: ')
         return True
     else:
