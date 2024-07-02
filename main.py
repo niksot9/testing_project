@@ -1,9 +1,8 @@
+from repository import SqliteRepository
+from checker import check_test
 
-
-
-
-
-
+x = {'subject': 'Astronomy', 'scoring_system': 1, 'complexity_level': 'beginer', 'questions': ['Largest planet in the solar system?', 'Earth diameter?'], 'answers': [['Earth', 'Jupiter', 'Mercury', 'Venus'], ['12 742 km', '13 742 km', '14 742 km']], 'correct_answers': ['Jupiter', '12 742 km']}
+print(check_test(x))
 
 
 
