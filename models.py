@@ -13,7 +13,9 @@ class Question:
     answers: list
     correct_answer: str
 
-    def __init__(self, question, answers=[], correct_answer=None):
+    def __init__(self, question, answers=None, correct_answer=None):
+        if answers is None:
+            answers = []
         self.question = question
         self.answers = answers
         self.correct_answer = correct_answer

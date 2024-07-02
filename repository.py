@@ -31,18 +31,17 @@ class SqliteRepository:
                 subject = data[0][1],
                 scoring_system = data[0][2],
                 complexity_level = data[0][3],
-                questions = [Question(data[0][5])]
+                questions = [Question(data[0][5], None, data[0][7])]
             )
             for row in data:
                 new_question = Question(row[5])
                 new_answer = Answer(row[6])
                 if new_question not in test.questions:
+                    new_question.correct_answer = row[7]
                     new_question.answers.append(new_answer)
                     test.questions.append(new_question)
                 else:
-                    new_question.answers.append(new_answer)
-                    test.questions = [new_question if x == new_question else x for x in test.questions]
-                test.questions[-1].correct_answer = row[7]
+                    test.questions[-1].answers.append(row[6])
             return test
         except IndexError:
             return f'No tests on subject'
@@ -126,6 +125,7 @@ class SqliteRepository:
             cursor.execute('ROLLBACK')
         finally:
             self.connection.close()
+
 
     def add_new_result(self, new_test: dict):
         pass
