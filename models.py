@@ -62,11 +62,11 @@ class User:
 
 
 class Result:
-    def __init__(self):
-        pass
+    def __init__(self, test_id, user_id, score):
+        self.test_id = test_id
+        self.user_id = user_id
+        self.score = score
 
-    def get_result(self):
-        pass
+    def __repr__(self):
+        return f'TestID: {self.test_id}, UserID: {self.user_id}, Score: {self.score}'
 
-    def put_result(self):
-        pass
