@@ -1,5 +1,3 @@
-from checker import check_test
-
 def creator_test():
     '''Интерфейс по созданию теста, заполняем 'сырыми' данными словарь, передаем в контроллер на проверку'''
     new_test = {'subject': input('Add subject: ').capitalize(),
@@ -32,10 +30,33 @@ def creator_test():
         new_test['correct_answers'].append(input(f'Add correct answer for question {count_questions}: '))
         count_questions += 1
 
-    while check_test(new_test):
-        return creator_test()
-
     return new_test
+
+
+def create_admin():
+    username = input('Add username: ').capitalize()
+    return [username, 1]
+
+
+def create_user():
+    username = input('Add username: ').capitalize()
+    return [username, 0]
+
+
+def continue_func():
+    req = input('Do you want to continue?: y/n')
+    if req.lower() == 'y':
+        return True
+    else:
+        return False
+
+
+def create_user_func():
+    req = input('Create user?: y/n')
+    if req.lower() == 'y':
+        return True
+    else:
+        return False
 
 
 
