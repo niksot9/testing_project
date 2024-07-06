@@ -1,12 +1,13 @@
-from repository import FILE_NAME
 from models import Question, Answer, User
 import sqlite3
+from pathlib import Path
 
+FILE_NAME = Path(__file__).parent / Path('./storage/storage.db')
 CONNECTION_REPOSITORY = sqlite3.connect(FILE_NAME)
 
 def check_test(new_test: dict):
     '''Получаем данные по test и проверяем они в ПОЛНОМ объеме в БД,
-    если нет то возвращаемся в create_test для повторного ввода данных'''
+    если нет, то возвращаемся в create_test для повторного ввода данных'''
     query = '''
         SELECT q.question, a.test_answer, q.correct_answer FROM tests t 
         INNER JOIN test_question tq 
@@ -49,37 +50,45 @@ def check_test(new_test: dict):
         return False
 
 
-def check_user_exists(new_user: User):
-    'Проверяем существует админ/пользователь в БД'
+def check_user_exists(user_data: list):
+    'Проверяем существует админ/пользователь в БД, True - существует, False - не существует'
     query = '''
         SELECT u.username, u.admin FROM users u
-        VALUES (?, ?);
+        WHERE u.username = ? AND u.admin = ?;
     '''
-    cursor = CONNECTION_REPOSITORY.execute(query, (new_user.name, new_user.is_admin))
+    cursor = CONNECTION_REPOSITORY.execute(query, (user_data[0], user_data[1]))
     data = cursor.fetchall()
-    if (new_user.name, new_user.is_admin) in data:
+    if (user_data[0], user_data[1]) in data:
         return True
     else:
         return False
 
 
-def access_rights(new_user: User):
-    'Проверяем права доступа админ/пользователь'
+def access_rights(user_data: list):
+    'Проверяем права доступа админ/пользователь, True - админ, False - пользователь'
     # должен быть хеш пароля, реализованно просто булево соответствие админу
     try:
         query = '''
-                    SELECT u.username, u.admin FROM users u
-                    VALUES (?, ?);
-                        '''
-        cursor = CONNECTION_REPOSITORY.execute(query, (new_user.name, new_user.is_admin))
+            SELECT u.username, u.admin FROM users u
+            WHERE u.username = ? AND u.admin = ?;
+        '''
+        cursor = CONNECTION_REPOSITORY.execute(query, (user_data[0], user_data[1]))
         data = cursor.fetchall()
-        if new_user.is_admin == '1':
+        if user_data[1] == 1 and user_data[1] in data[0]:
             return True
         else:
             return False
     except:
-        return f'Not exists'
+        return False
 
+
+def check_result(result_data: tuple):
+    'Проверяем тест, подсчитываем сумму баллов'
+    counter =0
+    for i in result_data[0]:
+        if result_data[0][i] == result_data[1][i]:
+            counter += 1
+    return counter
 
 
 # x = {'subject': 'Astronomy', 'scoring_system': 1, 'complexity_level': 'beginer', 'questions': ['Largest planet in the solar system?'], 'answers': [['Earth', 'Mercury', 'Jupiter', 'Venus']], 'correct_answers': ['Jupiter']}
