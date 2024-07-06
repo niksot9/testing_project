@@ -1,13 +1,12 @@
 from pathlib import Path
 import sqlite3
-from models import Test, Question, Answer
+from models import Test, Question, Answer, User, Result
 
 FILE_NAME = Path(__file__).parent / Path('./storage/storage.db')
 
 
 class SqliteRepository:
     connection = None
-
 
     def __init__(self):
         self.connection = sqlite3.connect(FILE_NAME)
@@ -56,7 +55,7 @@ class SqliteRepository:
         data = cursor.fetchall()
         id_subject = []
         for row in data:
-            id_subject.append(row)
+            id_subject.append(row[0])
         return f'All id for {subject}: {id_subject}'
 
 
@@ -72,39 +71,47 @@ class SqliteRepository:
         return f'Subjects: {tests}'
 
 
-    def add_new_answer(self, new_answers: dict, question_id: int):
-        try:
-            query = '''
-                INSERT INTO answers (test_answers, question_id)
-                VALUES (?, ?);
-            '''
-            cursor = self.connection.cursor()
-            cursor.execute('BEGIN')
-            for i in range(len(new_answers)):
-                cursor.execute(query, (new_answers[i], question_id))
-                cursor.execute('COMMIT')
-        except sqlite3.Error:
-            print('Transaction error')
-            cursor.execute('ROLLBACK')
+    def get_all_user(self):
+        query = '''
+            SELECT u.username, u.admin FROM users u;
+        '''
+        cursor = self.connection.execute(query)
+        data = cursor.fetchall()
+        users = []
+        for row in data:
+            user = User(row[0], row[1])
+            users.append([user.name, user.is_admin])
+        return f'Users: {users}'
 
 
-    def add_new_question(self, new_questions: list, new_answers: list, correct_answers: list, test_id: int):
+    def get_user_id(self, username):
         try:
             query = '''
-                INSERT INTO questions (question, correct_answer_id)
-                VALUES (?, ?)
-                RETURNING id;
+                SELECT u.id FROM users u
+                WHERE u.username = ?;
             '''
-            cursor = self.connection.cursor()
-            cursor.execute('BEGIN')
-            for i in range(len(new_questions)):
-                cursor.execute(query, (new_questions[i], correct_answers[i]))
-                question_id = cursor.fetchone()
-                cursor.execute('COMMIT')
-                self.add_new_answer(new_answers, question_id)
-        except sqlite3.Error:
-            print('Transaction error')
-            cursor.execute('ROLLBACK')
+            cursor = self.connection.execute(query, (username,))
+            data = cursor.fetchall()
+            user = data[0]
+            return f'UserID: {user}'
+        except IndexError:
+            print('User not exist')
+
+
+    def get_result_user(self, user_id: int):
+        query = '''
+            SELECT r.test_id, r.score FROM results r
+            INNER JOIN users u 
+            ON r.user_id = u.id
+            WHERE u.id = ?;
+        '''
+        cursor = self.connection.execute(query)
+        data = cursor.fetchall()
+        results = []
+        for row in data:
+            result = Result(row[0], user_id, row[1])
+            result.append(result.test_id, result.score)
+        return f'UserID {user_id} test results: {results}'
 
 
     def add_new_test(self, new_test: dict):
@@ -118,17 +125,70 @@ class SqliteRepository:
             cursor.execute('BEGIN')
             cursor.execute(query, (new_test['subject'], new_test['scoring_system'], new_test['complexity_level']))
             test_id = cursor.fetchone()
+
+            for i in range(len(new_test['questions'])):
+                query = '''
+                    INSERT INTO questions (question, correct_answer)
+                    VALUES (?, ?)
+                    RETURNING id;
+                '''
+                cursor.execute(query, (new_test['questions'][i], new_test['correct_answers'][i]))
+                question_id = cursor.fetchone()
+
+                for j in range(len(new_test['answers'][i])):
+                    query = '''
+                        INSERT INTO answers (test_answer, question_id)
+                        VALUES (?, ?);
+                    '''
+                    cursor.execute(query, (new_test['answers'][i][j], question_id[0]))
+
+                query = '''
+                    INSERT INTO test_question (test_id, question_id)
+                    VALUES (?, ?);
+                '''
+                cursor.execute(query, (test_id[0], question_id[0]))
             cursor.execute('COMMIT')
-            self.add_new_question(new_test['questions'], new_test['answers'], new_test['correct_answers'], test_id[0])
+
         except sqlite3.Error:
             print('Transaction error')
+            cursor.execute('ROLLBACK')
+        except IndexError:
+            print('Incomplete structure')
             cursor.execute('ROLLBACK')
         finally:
             self.connection.close()
 
 
-    def add_new_result(self, new_test: dict):
-        pass
+    def add_new_admin(self, user_data: list):
+        query = '''
+            INSERT INTO users (username, admin)
+            VALUES (?, ?);
+        '''
+        cursor = self.connection.cursor()
+        cursor.execute(query, (user_data[0], user_data[1]))
+        self.connection.commit()
+
+
+    def add_new_user(self, user_data: list):
+        query = '''
+            INSERT INTO users (username, admin)
+            VALUES (?, ?);
+        '''
+        cursor = self.connection.cursor()
+        new_user_data = User(user_data[0], user_data[1])
+        cursor.execute(query, (new_user_data.name, new_user_data.is_admin))
+        self.connection.commit()
+
+
+    def add_new_result(self, test_id, user_id, score):
+        query = '''
+            INSERT INTO results(test_id, user_id, score)
+            VALUES (?, ?, ?);
+        '''
+        cursor = self.connection.cursor()
+        new_result_data = Result(test_id, user_id, score)
+        cursor.execute(query, (new_result_data.test_id, new_result_data.user_id, new_result_data.score))
+        self.connection.commit()
 
 
 
