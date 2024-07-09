@@ -28,6 +28,7 @@ class Question:
         return (f'Question: {self.question}, Answers: {self.answers}, '
                 f'Correct: {self.correct_answer}')
 
+
 class Test:
     subject: str
     scoring_system: int
@@ -69,4 +70,3 @@ class Result:
 
     def __repr__(self):
         return f'TestID: {self.test_id}, UserID: {self.user_id}, Score: {self.score}'
-
