@@ -1,31 +1,50 @@
 from repository import SqliteRepository
-from controller import result_controller
 
-def welcom_func():
+
+def welcome_func():
     print('Welcome to the test-program!')
     username = input('Enter username: ')
     is_admin = input('Enter is_admin: ')
     return [username, is_admin]
 
 
-def user_handler(user_data: list):
-    '''Интерфейс для юзера'''
-    while True:
-        choice = input('Enter 1 - Choice test \n'
+def user_handler():
+    try:
+        '''Интерфейс для юзера'''
+        choice_list = [1, 2, 3, 4]
+        choice = input('Enter 1 - Choice and run test \n'
                        'Enter 2 - Show user result \n'
                        'Enter 3 - Create new user \n'
-                       'Enter 4 - Exit \n')
-        if choice == 1:
-            start_test = result_controller()
-            user_object = SqliteRepository
-            user_id = user_object.get_user_id(user_data[0])
-            user_object.add_new_result(start_test[0], user_id, start_test[1])
+                       'Enter 4 - Exit \n... ')
+        if int(choice) in choice_list:
+            return int(choice)
+        else:
+            print('Enter the number according to the list of options')
+            return user_handler()
+    except ValueError:
+        print('Enter the number according to the list of options')
+        return user_handler()
 
 
-
-def admin_handler(admin_date: list):
+def admin_handler():
     '''Интерфейс для админа'''
-    pass
+    try:
+        choice = input('Enter 1 - Choice test \n'
+                       'Enter 2 - Add test \n'
+                       'Enter 3 - Show user result \n'
+                       'Enter 4 - Show all users \n'
+                       'Enter 5 - Create new admin \n'
+                       'Enter 6 - Create new user \n'
+                       'Enter 7 - Exit \n... ')
+        choice_list = [1, 2, 3, 4, 5, 6, 7]
+        if int(choice) in choice_list:
+            return int(choice)
+        else:
+            print('Enter the number according to the list of options')
+            return admin_handler()
+    except ValueError:
+        print('Enter the number according to the list of options')
+        return admin_handler()
 
 
 def choice_test():
@@ -38,7 +57,7 @@ def choice_test():
         print(tests_list)
         choice = input('Select a test from the list: ')
         if choice in tests_list:
-            return choice
+            return int(choice)
         else:
             print('No test')
             return choice_test()
